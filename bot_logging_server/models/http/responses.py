@@ -3,8 +3,8 @@ import typing
 
 
 class ResponseMessagesEnum(enum.Enum):
-    INCORRECT_REQUEST_JSON = 'Post request was provided in wrong format'
-    WRONG_USER_TOKEN = 'Wrong user token'
+    INCORRECT_REQUEST_JSON = "Post request was provided in wrong format"
+    WRONG_USER_TOKEN = "Wrong user token"
 
 
 class ErrorResponse(Exception):
@@ -15,7 +15,4 @@ class ErrorResponse(Exception):
 
 
 def _build_error_response(code: int, message: str) -> typing.Dict[str, str]:
-    return {
-        'code': str(code),
-        'message': message
-    }
+    return {"code": str(code), "message": message}
