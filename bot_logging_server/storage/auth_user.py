@@ -8,6 +8,13 @@ from bot_logging_server.models.mysql import users, db_connection
 async def get_user_id(
     request: requests.SendLogsPostRequest, mysql_worker: db_connection.MysqlWorker
 ) -> typing.Optional[int]:
+    """
+    Get user id from db
+
+    :param request:
+    :param mysql_worker:
+    :return: True if user is authorized else False
+    """
     username = request.body.data.user
     user_token = request.headers.x_user_token
 

@@ -18,13 +18,20 @@ class RequestParsingFailedError(Exception):
 
 @dataclasses.dataclass(frozen=True)
 class SendLogsPostRequest:
+    """
+    Serializing /send_logs request
+
+    Methods:
+        build - build class instance
+    """
+
     body: "RequestBody"
     headers: "Headers"
 
     @classmethod
     async def build(cls, quart_request: quart.Request) -> "SendLogsPostRequest":
         body = await quart_request.get_json(force=True)
-        logger.info('Request: %s' % body)
+        logger.info("Request: %s" % body)
         headers = quart_request.headers
         try:
             return cls(body=RequestBody.build(body), headers=Headers.build(headers))
@@ -67,7 +74,6 @@ class Headers:
 class Data:
     user: str
     pid: int
-    p_description: str
     p_name: str
     post_time: datetime.datetime
     logs: typing.List["Log"]
@@ -76,14 +82,11 @@ class Data:
     def build(cls, data_dict: typing.Mapping[str, typing.Any]):
         post_time = http_utils.try_get_datetime(data_dict["post_time"])
         http_utils.check_str_args_are_one_word_and_not_empty(data_dict["user"])
-        http_utils.check_str_args_not_empty(
-            data_dict["p_description"], data_dict["p_name"]
-        )
+        http_utils.check_str_args_not_empty(data_dict["p_name"])
         http_utils.check_unsigned_args(data_dict["pid"])
         return cls(
             user=data_dict["user"],
             pid=data_dict["pid"],
-            p_description=data_dict["p_description"],
             p_name=data_dict["p_name"],
             post_time=post_time,
             logs=[Log.build(log) for log in data_dict["logs"]],
@@ -95,10 +98,17 @@ class Log:
     level: logs.LogLevel
     msg: str
     event_at: datetime.datetime
+    p_description: str
 
     @classmethod
     def build(cls, log_dict: typing.Mapping[str, typing.Any]):
         event_at = http_utils.try_get_datetime(log_dict["event_at"])
         level = http_utils.try_get_log_level(log_dict["level"])
         http_utils.check_str_args_not_empty(log_dict["msg"])
-        return cls(level=level, msg=log_dict["msg"], event_at=event_at,)
+        http_utils.check_str_args_not_empty(log_dict["p_description"])
+        return cls(
+            level=level,
+            msg=log_dict["msg"],
+            event_at=event_at,
+            p_description=log_dict["p_description"],
+        )

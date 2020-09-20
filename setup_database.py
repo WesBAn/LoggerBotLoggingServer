@@ -24,6 +24,7 @@ CREATE_LOGS_TABLE = """
     `user_id` int(10) unsigned NOT NULL,
     `pid` int(10) NOT NULL,
     `p_name` VARCHAR(100) NOT NULL,
+    `p_description` VARCHAR(100) NOT NULL,
     `log_level` ENUM('error', 'warning') NOT NULL,
     `log_msg` VARCHAR(100) NOT NULL,
     `log_event_at` DATETIME NOT NULL,
