@@ -1,10 +1,19 @@
 import dataclasses
 import datetime
+import logging
 import typing
 
 import quart
 
 from bot_logging_server.models.http import headers as headers_template
+from bot_logging_server.models.http import utils as http_utils
+from bot_logging_server.models.mysql import logs
+
+logger = logging.Logger(__name__)
+
+
+class RequestParsingFailedError(Exception):
+    """Request is incorrect"""
 
 
 @dataclasses.dataclass(frozen=True)
@@ -13,10 +22,21 @@ class SendLogsPostRequest:
     headers: "Headers"
 
     @classmethod
-    def build(cls, quart_request: quart.Request) -> "SendLogsPostRequest":
-        body = quart_request.args
+    async def build(cls, quart_request: quart.Request) -> "SendLogsPostRequest":
+        body = await quart_request.get_json(force=True)
+        logger.info('Request: %s' % body)
         headers = quart_request.headers
-        return cls(body=RequestBody.build(body), headers=Headers.build(headers))
+        try:
+            return cls(body=RequestBody.build(body), headers=Headers.build(headers))
+        except (
+            KeyError,
+            TypeError,
+            ValueError,
+            headers_template.WrongHeadersError,
+            http_utils.BadRequestArgs,
+        ) as err:
+            logger.error(err)
+            raise RequestParsingFailedError from err
 
 
 @dataclasses.dataclass(frozen=True)
@@ -30,25 +50,23 @@ class RequestBody:
 
 @dataclasses.dataclass(frozen=True)
 class Headers:
-    content_type: str
+    x_content_type: str
     x_user_token: str
 
     @classmethod
     def build(cls, headers_dict: typing.Mapping[str, str]):
-        content_type = headers_dict.get(headers_template.X_CONTENT_TYPE)
-        if content_type != headers_template.JSON_CONTENT_TYPE:
-            raise headers_template.WrongHeadersError("X-Content-Type is incorrect")
-
+        x_content_type = headers_dict.get(headers_template.X_CONTENT_TYPE)
         x_user_token = headers_dict.get(headers_template.X_USER_TOKEN)
-        if not x_user_token:  # TODO or user_token is not in DB
-            raise headers_template.WrongHeadersError("X-User-Token is empty")
-
-        return cls(content_type=content_type, x_user_token=x_user_token)
+        http_utils.check_headers_passed_correctly(
+            x_content_type=x_content_type, x_user_token=x_user_token
+        )
+        return cls(x_content_type=x_content_type, x_user_token=x_user_token)
 
 
 @dataclasses.dataclass(frozen=True)
 class Data:
-    pid: str
+    user: str
+    pid: int
     p_description: str
     p_name: str
     post_time: datetime.datetime
@@ -56,23 +74,31 @@ class Data:
 
     @classmethod
     def build(cls, data_dict: typing.Mapping[str, typing.Any]):
+        post_time = http_utils.try_get_datetime(data_dict["post_time"])
+        http_utils.check_str_args_are_one_word_and_not_empty(data_dict["user"])
+        http_utils.check_str_args_not_empty(
+            data_dict["p_description"], data_dict["p_name"]
+        )
+        http_utils.check_unsigned_args(data_dict["pid"])
         return cls(
+            user=data_dict["user"],
             pid=data_dict["pid"],
             p_description=data_dict["p_description"],
             p_name=data_dict["p_name"],
-            post_time=datetime.datetime.fromisoformat(data_dict["post_time"]),
+            post_time=post_time,
             logs=[Log.build(log) for log in data_dict["logs"]],
         )
 
 
 @dataclasses.dataclass(frozen=True)
 class Log:
-    level: str
+    level: logs.LogLevel
     msg: str
-    event_at: str
+    event_at: datetime.datetime
 
     @classmethod
     def build(cls, log_dict: typing.Mapping[str, typing.Any]):
-        return cls(
-            level=log_dict["level"], msg=log_dict["msg"], event_at=log_dict["event_at"],
-        )
+        event_at = http_utils.try_get_datetime(log_dict["event_at"])
+        level = http_utils.try_get_log_level(log_dict["level"])
+        http_utils.check_str_args_not_empty(log_dict["msg"])
+        return cls(level=level, msg=log_dict["msg"], event_at=event_at,)

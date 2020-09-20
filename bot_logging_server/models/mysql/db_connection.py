@@ -1,0 +1,71 @@
+import asyncio
+import aiomysql
+import contextlib
+import os
+import logging
+
+from bot_logging_server.config import config
+
+logger = logging.Logger(__name__)
+
+ENV_DB_USER = "LOGGER_DB_USER"
+ENV_DB_PASSWORD = "LOGGER_DB_PASSWORD"
+
+
+class MysqlWrongAuthParams(Exception):
+    """User or password is None"""
+
+
+class ConnectionFailed(Exception):
+    """Connection to db was not established"""
+
+
+class CursorFailed(Exception):
+    """Got fail when was creating the cursor"""
+
+
+class MysqlWorker:
+    def __init__(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        user=os.getenv(ENV_DB_USER),
+        password=os.getenv(ENV_DB_PASSWORD),
+    ):
+        if user is None or password is None:
+            raise MysqlWrongAuthParams("User or password is None")
+        self.connect_info = {
+            "host": config.MYSQL_HOST,
+            "user": user,
+            "password": password,
+            "port": config.MYSQL_PORT,
+            "db": config.DB_NAME,
+            "cursorclass": aiomysql.cursors.DictCursor,
+            "loop": loop,
+        }
+
+    @contextlib.asynccontextmanager
+    async def sql_cursor(self):
+        async with self._sql_connection() as connection:
+            cursor = await connection.cursor()
+            try:
+                yield cursor
+            except Exception as exc:
+                logger.error(exc)
+                raise CursorFailed("Got fail when was creating the cursor")
+            finally:
+                await cursor.close()
+
+    @contextlib.asynccontextmanager
+    async def _sql_connection(self):
+        connection = await aiomysql.connect(**self.connect_info)
+        try:
+            yield connection
+        except CursorFailed as cursor_exc:
+            await connection.rollback()
+            raise cursor_exc
+        except Exception:
+            raise ConnectionFailed("Connection to db failed")
+        else:
+            await connection.commit()
+        finally:
+            connection.close()
