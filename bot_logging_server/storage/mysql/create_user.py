@@ -1,0 +1,17 @@
+import logging
+
+from bot_logging_server.models.mysql import users
+from bot_logging_server.models.mysql import db_connection
+from bot_logging_server.storage.mysql import utils
+
+logger = logging.Logger(__name__)
+
+
+async def create_user(
+    user: users.User, mysql_worker: db_connection.MysqlWorker
+) -> None:
+    async with mysql_worker.sql_cursor() as cursor:
+        query = utils.get_parsed_query_from_file(
+            "create_user.sql", user.username, user.tel_id, user.user_token
+        )
+        await cursor.execute(query)
