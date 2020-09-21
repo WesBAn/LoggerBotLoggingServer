@@ -5,8 +5,10 @@ import typing
 
 import quart
 
-from bot_logging_server.models.http import headers as headers_template
-from bot_logging_server.models.http import utils as http_utils
+from bot_logging_server.models.http import (
+    utils as http_utils,
+    headers as headers_template,
+)
 from bot_logging_server.models.mysql import logs
 
 logger = logging.Logger(__name__)

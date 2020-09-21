@@ -6,7 +6,6 @@ from bot_logging_server.api import send_logs
 from bot_logging_server.config import quart_config
 from bot_logging_server.models.http import headers
 
-
 ENV_DB_USER = "LOGGER_DB_USER"
 ENV_DB_PASSWORD = "LOGGER_DB_PASSWORD"
 
@@ -105,7 +104,6 @@ def main(host, port, user, password):
     if password is not None:
         global mysql_password
         mysql_password = password
-
     app.run(
         host=quart_config.HOST if host is None else host,
         port=quart_config.PORT if port is None else port,

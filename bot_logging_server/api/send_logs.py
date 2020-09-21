@@ -1,14 +1,11 @@
 import asyncio
 import logging
-import os
 import typing
 
 import quart
 
-from bot_logging_server.models.http import requests
-from bot_logging_server.models.http import headers
-from bot_logging_server.storage import auth_user
-from bot_logging_server.storage import write_logs
+from bot_logging_server.models.http import requests, headers
+from bot_logging_server.storage import write_logs, auth_user
 from bot_logging_server.models.mysql import db_connection
 
 logger = logging.getLogger(__name__)

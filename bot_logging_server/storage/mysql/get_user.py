@@ -1,8 +1,7 @@
 import typing
 import logging
 
-from bot_logging_server.models.mysql import users
-from bot_logging_server.models.mysql import db_connection
+from bot_logging_server.models.mysql import users, db_connection
 from bot_logging_server.storage.mysql import utils
 
 logger = logging.Logger(__name__)
