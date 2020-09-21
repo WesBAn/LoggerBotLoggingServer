@@ -11,6 +11,16 @@ logger = logging.Logger(__name__)
 async def get_user(
     user: users.User, mysql_worker: db_connection.MysqlWorker
 ) -> typing.Optional[dict]:
+    """
+    Get user from db
+    If result users is 0 then user is not authorized
+    If result users is 1 then user exists and authorized
+    Else make user unauthorized because it should not happened
+
+    :param user:
+    :param mysql_worker:
+    :return:
+    """
     async with mysql_worker.sql_cursor() as cursor:
         query = utils.get_parsed_query_from_file(
             "get_user.sql", user.username, user.user_token

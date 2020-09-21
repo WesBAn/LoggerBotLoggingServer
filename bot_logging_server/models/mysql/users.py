@@ -4,6 +4,14 @@ import typing
 
 @dataclasses.dataclass
 class User:
+    """
+    Class used for getting or creating users
+
+    Methods:
+        build_user_to_auth(username, user_token) - builds user instance to check user in db
+        build_user_to_add(username, user_token, tel_id) - builds user instance to write user in db
+    """
+
     username: str
     user_token: str
     tel_id: typing.Optional[str]
@@ -15,11 +23,3 @@ class User:
     @classmethod
     def build_user_to_add(cls, username: str, user_token: str, tel_id: str) -> "User":
         return cls(username=username, user_token=user_token, tel_id=tel_id)
-
-    # TODO Maybe unused
-    def serialize(self) -> typing.Dict[str, typing.Optional[str]]:
-        return {
-            "username": self.username,
-            "user_token": self.user_token,
-            "tel_id": self.tel_id,
-        }

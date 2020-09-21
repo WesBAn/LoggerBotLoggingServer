@@ -25,6 +25,16 @@ class CursorFailed(Exception):
 
 
 class MysqlWorker:
+    """
+    Sql class which provided async context manager to work with db
+
+    Methods:
+        sql_cursor() - cursor context manager used for performing sql requests
+
+        __init__(loop, user, password) - create class instance user and password
+        or getting from environment
+    """
+
     def __init__(
         self,
         loop: asyncio.AbstractEventLoop,

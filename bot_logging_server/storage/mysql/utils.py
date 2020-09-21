@@ -9,6 +9,13 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def get_parsed_query_from_file(name: str, *args_to_fill_query) -> str:
+    """
+    Parse sql query file and replace templates ($0, $1..) by values
+
+    :param name:
+    :param args_to_fill_query:
+    :return:
+    """
     with open(f"{os.getcwd()}/{DEFAULT_PATH}/{name}", "r") as file:
         result_str = " ".join(
             [line.strip() for line in file if line.strip() and not line.startswith("#")]
@@ -24,11 +31,19 @@ def get_parsed_query_from_file(name: str, *args_to_fill_query) -> str:
 def make_insert_many_values_query_from_file(
     name: str, values: typing.Iterable[logs.UserLog]
 ):
+    """
+    Parse sql query file and replace $0 in 'VALUES $0' by inserting values
+
+    :param name:
+    :param values:
+    :return:
+    """
     logs_in_list = [
         (
             value.user_id,
             value.pid,
             value.p_name,
+            value.p_description,
             value.log_level.value,
             value.log_msg,
             value.log_event_at,
