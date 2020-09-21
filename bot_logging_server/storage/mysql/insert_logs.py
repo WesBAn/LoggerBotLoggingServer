@@ -1,7 +1,6 @@
 import typing
 
-from bot_logging_server.models.mysql import logs
-from bot_logging_server.models.mysql import db_connection
+from bot_logging_server.models.mysql import logs, db_connection
 from bot_logging_server.storage.mysql import utils
 
 
