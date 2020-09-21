@@ -15,9 +15,9 @@ def check_headers_passed_correctly(x_user_token: str, x_content_type: str) -> No
     if (
         not isinstance(x_user_token, str)
         or len(x_user_token.split()) != 1
-        and len(x_user_token) != config.USER_TOKEN_LENGTH
+        or len(x_user_token) != config.USER_TOKEN_LENGTH
     ):
-        raise headers.WrongHeadersError("X-Content-Type is incorrect")
+        raise headers.WrongHeadersError("X-User-Token is incorrect")
 
 
 def check_str_args_are_one_word_and_not_empty(*args) -> None:

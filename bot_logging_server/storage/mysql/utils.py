@@ -28,7 +28,7 @@ def get_parsed_query_from_file(name: str, *args_to_fill_query) -> str:
         return result_str
 
 
-def make_insert_many_values_query_from_file(
+def make_insert_logs_values_query_from_file(
     name: str, values: typing.Iterable[logs.UserLog]
 ):
     """
