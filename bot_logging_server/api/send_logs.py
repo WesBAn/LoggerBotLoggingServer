@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import typing
 
 import quart
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 async def handle(
-    quart_request: quart.request,
+    quart_request: quart.request, mysql_user: str, mysql_password: str,
 ) -> typing.Tuple[typing.Dict, int, typing.Dict]:
     """
     Base function to handle /send_logs request
@@ -24,12 +25,16 @@ async def handle(
         quart.exceptions.Forbidden
         quart.exceptions.BadRequest
 
+    :param mysql_user:
+    :param mysql_password:
     :param quart_request:
     :return: 200 response
     """
     try:
         request = await requests.SendLogsPostRequest.build(quart_request)
-        mysql_worker = db_connection.MysqlWorker(asyncio.get_event_loop())
+        mysql_worker = db_connection.MysqlWorker(
+            asyncio.get_event_loop(), user=mysql_user, password=mysql_password
+        )
         user_id = await auth_user.get_user_id(
             request=request, mysql_worker=mysql_worker
         )

@@ -1,15 +1,11 @@
 import asyncio
 import aiomysql
 import contextlib
-import os
 import logging
 
 from bot_logging_server.config import config
 
 logger = logging.Logger(__name__)
-
-ENV_DB_USER = "LOGGER_DB_USER"
-ENV_DB_PASSWORD = "LOGGER_DB_PASSWORD"
 
 
 class MysqlWrongAuthParams(Exception):
@@ -36,10 +32,7 @@ class MysqlWorker:
     """
 
     def __init__(
-        self,
-        loop: asyncio.AbstractEventLoop,
-        user=os.getenv(ENV_DB_USER),
-        password=os.getenv(ENV_DB_PASSWORD),
+        self, loop: asyncio.AbstractEventLoop, user: str, password: str,
     ):
         if user is None or password is None:
             raise MysqlWrongAuthParams("User or password is None")

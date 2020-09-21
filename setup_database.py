@@ -1,4 +1,3 @@
-import contextlib
 import logging
 import click
 import pymysql
@@ -37,13 +36,9 @@ CREATE_LOGS_TABLE = """
 logger = logging.getLogger(__name__)
 
 
-@click.command()
-@click.option("--user", type=str, required=True, help="Username")
-@click.option("--password", type=str, required=True, help="Password")
-@click.option("--port", type=int, required=True, default=8889, help="Port")
-def main(user, password, port):
+def _setup_db(user, password, port, host=HOST):
     connection = pymysql.connect(
-        host=HOST,
+        host=host,
         user=user,
         password=password,
         port=port,
@@ -63,6 +58,18 @@ def main(user, password, port):
         connection.commit()
 
     connection.close()
+
+
+@click.command()
+@click.option("--user", type=str, required=True, help="Username")
+@click.option("--password", type=str, required=True, help="Password")
+@click.option("--port", type=int, required=True, default=8889, help="Port")
+def main(user, password, port):
+    _setup_db(user=user, password=password, port=port)
+
+
+def testing_main(user, password, port, host):
+    _setup_db(user=user, password=password, port=port, host=host)
 
 
 if __name__ == "__main__":

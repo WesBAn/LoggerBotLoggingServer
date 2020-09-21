@@ -16,5 +16,5 @@ async def insert_logs(
     :return:
     """
     async with mysql_worker.sql_cursor() as cursor:
-        query = utils.make_insert_many_values_query_from_file("insert_logs.sql", logs_)
+        query = utils.make_insert_logs_values_query_from_file("insert_logs.sql", logs_)
         await cursor.execute(query)
