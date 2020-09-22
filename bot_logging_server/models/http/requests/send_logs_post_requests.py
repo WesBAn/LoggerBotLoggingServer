@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 import dataclasses
 import datetime
 import logging
@@ -34,11 +35,11 @@ class SendLogsPostRequest:
         try:
             return cls(body=RequestBody.build(body), headers=Headers.build(headers))
         except (
-            KeyError,
-            TypeError,
-            ValueError,
-            headers_template.WrongHeadersError,
-            http_utils.BadRequestArgs,
+                KeyError,
+                TypeError,
+                ValueError,
+                headers_template.WrongHeadersError,
+                http_utils.BadRequestArgs,
         ) as err:
             logger.error(err)
             raise http_utils.RequestParsingFailedError from err

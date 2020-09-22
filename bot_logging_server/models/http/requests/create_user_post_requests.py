@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 import dataclasses
 import logging
 import typing
@@ -8,7 +9,7 @@ from bot_logging_server.models.http import (
     headers as headers_template,
 )
 
-logger = logging.getLogger("quart.serving")
+logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 @dataclasses.dataclass(frozen=True)
@@ -31,11 +32,11 @@ class CreateUserPostRequest:
         try:
             return cls(body=RequestBody.build(body), headers=Headers.build(headers))
         except (
-            KeyError,
-            TypeError,
-            ValueError,
-            headers_template.WrongHeadersError,
-            http_utils.BadRequestArgs,
+                KeyError,
+                TypeError,
+                ValueError,
+                headers_template.WrongHeadersError,
+                http_utils.BadRequestArgs,
         ) as err:
             logger.error(err)
             raise http_utils.RequestParsingFailedError from err

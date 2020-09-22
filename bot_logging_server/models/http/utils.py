@@ -19,9 +19,9 @@ def check_user_token_and_content_type_correct(
     if x_content_type != headers.JSON_CONTENT_TYPE:
         raise headers.WrongHeadersError("X-Content-Type is incorrect")
     if (
-        not isinstance(x_user_token, str)
-        or len(x_user_token.split()) != 1
-        or len(x_user_token) != config.USER_TOKEN_LENGTH
+            not isinstance(x_user_token, str)
+            or len(x_user_token.split()) != 1
+            or len(x_user_token) != config.USER_TOKEN_LENGTH
     ):
         raise headers.WrongHeadersError("X-User-Token is incorrect")
 

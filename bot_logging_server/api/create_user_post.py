@@ -9,11 +9,14 @@ from bot_logging_server.models.http import utils as http_utils
 from bot_logging_server.storage import create_user
 from bot_logging_server.models.mysql import db_connection
 
-logger = logging.getLogger("quart.serving")
+logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 async def handle(
-    quart_request: quart.request, mysql_user: str, mysql_password: str, api_key: str
+        quart_request: quart.request,
+        mysql_user: str,
+        mysql_password: str,
+        api_key: str
 ) -> typing.Tuple[typing.Dict, int, typing.Dict]:
     """
     Base function to handle /create_user POST request
