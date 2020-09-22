@@ -11,11 +11,7 @@ from bot_logging_server.models.http import (
 )
 from bot_logging_server.models.mysql import logs
 
-logger = logging.Logger(__name__)
-
-
-class RequestParsingFailedError(Exception):
-    """Request is incorrect"""
+logger = logging.getLogger("quart.serving")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -45,7 +41,7 @@ class SendLogsPostRequest:
             http_utils.BadRequestArgs,
         ) as err:
             logger.error(err)
-            raise RequestParsingFailedError from err
+            raise http_utils.RequestParsingFailedError from err
 
 
 @dataclasses.dataclass(frozen=True)
@@ -63,10 +59,10 @@ class Headers:
     x_user_token: str
 
     @classmethod
-    def build(cls, headers_dict: typing.Mapping[str, str]):
+    def build(cls, headers_dict: typing.Mapping[str, str]) -> "Headers":
         x_content_type = headers_dict.get(headers_template.X_CONTENT_TYPE)
         x_user_token = headers_dict.get(headers_template.X_USER_TOKEN)
-        http_utils.check_headers_passed_correctly(
+        http_utils.check_user_token_and_content_type_correct(
             x_content_type=x_content_type, x_user_token=x_user_token
         )
         return cls(x_content_type=x_content_type, x_user_token=x_user_token)

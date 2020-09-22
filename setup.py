@@ -10,4 +10,12 @@ setup(
     author="mc-wesban",
     author_email="wesban1@gmail.com",
     description="",
+    classifiers=[
+        "Natural Language :: English",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Programming Language :: Python :: Implementation :: CPython",
+    ],
 )

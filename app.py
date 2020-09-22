@@ -2,12 +2,14 @@ import os
 import click
 import quart
 
-from bot_logging_server.api import send_logs
+from bot_logging_server.api import send_logs_post
+from bot_logging_server.api import create_user_post
 from bot_logging_server.config import quart_config
 from bot_logging_server.models.http import headers
 
 ENV_DB_USER = "LOGGER_DB_USER"
 ENV_DB_PASSWORD = "LOGGER_DB_PASSWORD"
+ENV_API_KEY = "LOGGER_API_KEY"
 
 app = quart.Quart(__name__)
 
@@ -25,6 +27,56 @@ async def index():
     quart.abort(404)
 
 
+@app.route("/create_user", methods=["POST"])
+async def create_user_():
+    """
+    Creates new user
+
+    If global vars: (mysql_user, mysql_password) are not set
+    then get them from environment LOGGER_DB_USER and LOGGER_DB_PASSWORD respectively
+
+    Example of correct request:
+    {
+        "user": "username",
+        "password": "somepassword",
+        "tel_id": "141552"
+    }
+    with Content-Type and X-Api-Key headers
+
+    :return:
+        [User created] (200) response_description, 200, application/json
+        [Forbidden] (403) response_description, 403, application/json
+        [BadRequest] (400) response_description, 400, application/json
+    """
+    try:
+        return await create_user_post.handle(
+            quart_request=quart.request,
+            mysql_user=mysql_user if mysql_user is not None else os.getenv(ENV_DB_USER),
+            mysql_password=mysql_password
+            if mysql_password is not None
+            else os.getenv(ENV_DB_PASSWORD),
+            api_key=os.getenv(ENV_API_KEY),
+        )
+    except quart.exceptions.BadRequest:
+        return (
+            {"code": 400, "message": "BadRequest"},
+            400,
+            {"Content-Type": headers.JSON_CONTENT_TYPE},
+        )
+    except quart.exceptions.Forbidden:
+        return (
+            {"code": 403, "message": "Forbidden"},
+            403,
+            {"Content-Type": headers.JSON_CONTENT_TYPE},
+        )
+    except Exception:
+        return (
+            {"code": 500, "message": "Internal Server Error"},
+            500,
+            {"Content-Type": headers.JSON_CONTENT_TYPE},
+        )
+
+
 @app.route("/send_logs", methods=["POST"])
 async def send_logs_():
     """
@@ -35,20 +87,21 @@ async def send_logs_():
 
     Example of correct request:
     {
-        'data': {
-           'user': user
-           'pid': pid,
-        'p_name': process.name(),
-        'post_time': "2020-05-05 20:00:00+00:00",
-        'logs': [
+        "data": {
+           "user": user
+           "pid": pid,
+        "p_name": process.name(),
+        "post_time": "2020-05-05 20:00:00+00:00",
+        "logs": [
             {
-                'level': level,
-                'msg': msg,
-                'event_at':msg_datetime,
-                'p_description': process_user_desc
+                "level": level,
+                "msg": msg,
+                "event_at":msg_datetime,
+                "p_description": process_user_desc
             }
         ]
     }
+    with Content-Type and X-User-Token headers
 
     :return:
         [Logs added] (200) response_description, 200, application/json
@@ -56,7 +109,7 @@ async def send_logs_():
         [BadRequest] (400) response_description, 400, application/json
     """
     try:
-        return await send_logs.handle(
+        return await send_logs_post.handle(
             quart_request=quart.request,
             mysql_user=mysql_user if mysql_user is not None else os.getenv(ENV_DB_USER),
             mysql_password=mysql_password
@@ -107,6 +160,7 @@ def main(host, port, user, password):
     app.run(
         host=quart_config.HOST if host is None else host,
         port=quart_config.PORT if port is None else port,
+        debug=True,
     )
 
 

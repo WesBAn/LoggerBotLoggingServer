@@ -1,2 +1,2 @@
 from .send_logs_post_requests import SendLogsPostRequest
-from .send_logs_post_requests import RequestParsingFailedError
+from .create_user_post_requests import CreateUserPostRequest
