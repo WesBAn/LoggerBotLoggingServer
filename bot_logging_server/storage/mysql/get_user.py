@@ -4,7 +4,7 @@ import logging
 from bot_logging_server.models.mysql import users, db_connection
 from bot_logging_server.storage.mysql import utils
 
-logger = logging.getLogger("quart.serving")
+logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 async def get_user(
@@ -25,7 +25,7 @@ async def get_user(
             "get_user.sql", user.username, user.user_token
         )
         await cursor.execute(query)
-        result = [row for row in await cursor.fetchall()]
+        result = await cursor.fetchall()
         if len(result) > 1:
             logger.warning("Amount of returned users is more than 1")
             return None

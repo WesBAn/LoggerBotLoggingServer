@@ -13,10 +13,7 @@ logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 async def handle(
-        quart_request: quart.request,
-        mysql_user: str,
-        mysql_password: str,
-        api_key: str
+    quart_request: quart.request, mysql_user: str, mysql_password: str, api_key: str
 ) -> typing.Tuple[typing.Dict, int, typing.Dict]:
     """
     Base function to handle /create_user POST request
@@ -46,6 +43,6 @@ async def handle(
             200,
             {"Content-Type": headers.JSON_CONTENT_TYPE},
         )
-    except http_utils.RequestParsingFailedError:
+    except http_utils.RequestParsingFailedError as parsed_err:
         logger.error("Request is incorrect")
-        raise quart.exceptions.BadRequest
+        raise quart.exceptions.BadRequest from parsed_err

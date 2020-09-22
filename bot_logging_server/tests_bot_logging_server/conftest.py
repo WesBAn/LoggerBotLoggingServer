@@ -1,4 +1,5 @@
 # pylint: disable=wildcard-import, unused-wildcard-import, redefined-outer-name
+# pylint: disable=C0415
 import pytest
 
 

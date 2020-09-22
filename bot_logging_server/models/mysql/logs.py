@@ -1,3 +1,5 @@
+# pylint: disable=R0902
+# pylint: disable=R0913
 import dataclasses
 import datetime
 import enum
@@ -29,15 +31,15 @@ class UserLog:
 
     @classmethod
     def build(
-            cls,
-            user_id: int,
-            pid: int,
-            p_name: str,
-            log_level: typing.Union[str, LogLevel],
-            log_msg: str,
-            log_event_at: datetime.datetime,
-            post_time: datetime.datetime,
-            p_description: str,
+        cls,
+        user_id: int,
+        pid: int,
+        p_name: str,
+        log_level: typing.Union[str, LogLevel],
+        log_msg: str,
+        log_event_at: datetime.datetime,
+        post_time: datetime.datetime,
+        p_description: str,
     ) -> "UserLog":
         return cls(
             user_id=user_id,

@@ -27,18 +27,18 @@ class CreateUserPostRequest:
     @classmethod
     async def build(cls, quart_request: quart.Request) -> "CreateUserPostRequest":
         body = await quart_request.get_json(force=True)
-        logger.info("Request body: %s" % body)
+        logger.info("Request body: %s", body)
         headers = quart_request.headers
         try:
             return cls(body=RequestBody.build(body), headers=Headers.build(headers))
         except (
-                KeyError,
-                TypeError,
-                ValueError,
-                headers_template.WrongHeadersError,
-                http_utils.BadRequestArgs,
+            KeyError,
+            TypeError,
+            ValueError,
+            headers_template.WrongHeadersError,
+            http_utils.BadRequestArgs,
         ) as err:
-            logger.error(err)
+            logger.error('During parsing request happened %s', err)
             raise http_utils.RequestParsingFailedError from err
 
 
