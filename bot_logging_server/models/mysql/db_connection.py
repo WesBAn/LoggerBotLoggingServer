@@ -5,7 +5,7 @@ import logging
 
 from bot_logging_server.config import config
 
-logger = logging.Logger(__name__)
+logger = logging.getLogger("quart.serving")
 
 
 class MysqlWrongAuthParams(Exception):

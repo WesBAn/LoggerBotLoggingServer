@@ -4,7 +4,7 @@ import logging
 from bot_logging_server.models.mysql import users, db_connection
 from bot_logging_server.storage.mysql import utils
 
-logger = logging.Logger(__name__)
+logger = logging.getLogger("quart.serving")
 
 
 async def get_user(

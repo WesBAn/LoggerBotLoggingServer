@@ -5,11 +5,17 @@ from bot_logging_server.models.mysql import logs
 from bot_logging_server.config import config
 
 
+class RequestParsingFailedError(Exception):
+    """Request is incorrect"""
+
+
 class BadRequestArgs(Exception):
     """Request is invalid"""
 
 
-def check_headers_passed_correctly(x_user_token: str, x_content_type: str) -> None:
+def check_user_token_and_content_type_correct(
+    x_user_token: str, x_content_type: str
+) -> None:
     if x_content_type != headers.JSON_CONTENT_TYPE:
         raise headers.WrongHeadersError("X-Content-Type is incorrect")
     if (
@@ -18,6 +24,13 @@ def check_headers_passed_correctly(x_user_token: str, x_content_type: str) -> No
         or len(x_user_token) != config.USER_TOKEN_LENGTH
     ):
         raise headers.WrongHeadersError("X-User-Token is incorrect")
+
+
+def check_api_key_and_content_type_correct(x_api_key: str, x_content_type: str) -> None:
+    if x_content_type != headers.JSON_CONTENT_TYPE:
+        raise headers.WrongHeadersError("X-Content-Type is incorrect")
+    if not isinstance(x_api_key, str) or len(x_api_key.split()) != 1:
+        raise headers.WrongHeadersError("X-Api-Key is incorrect")
 
 
 def check_str_args_are_one_word_and_not_empty(*args) -> None:

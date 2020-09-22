@@ -63,13 +63,9 @@ def _setup_db(user, password, port, host=HOST):
 @click.command()
 @click.option("--user", type=str, required=True, help="Username")
 @click.option("--password", type=str, required=True, help="Password")
-@click.option("--port", type=int, required=True, default=8889, help="Port")
+@click.option("--port", type=int, required=True, help="Port")
 def main(user, password, port):
     _setup_db(user=user, password=password, port=port)
-
-
-def testing_main(user, password, port, host):
-    _setup_db(user=user, password=password, port=port, host=host)
 
 
 if __name__ == "__main__":
