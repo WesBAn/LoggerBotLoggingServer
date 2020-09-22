@@ -1,11 +1,11 @@
-import asyncio
-import aiomysql
 import contextlib
 import logging
+import asyncio
+import aiomysql
 
 from bot_logging_server.config import config
 
-logger = logging.getLogger("quart.serving")
+logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 class MysqlWrongAuthParams(Exception):
@@ -54,7 +54,7 @@ class MysqlWorker:
                 yield cursor
             except Exception as exc:
                 logger.error(exc)
-                raise CursorFailed("Got fail when was creating the cursor")
+                raise CursorFailed("Got fail when was creating the cursor") from exc
             finally:
                 await cursor.close()
 
@@ -66,8 +66,8 @@ class MysqlWorker:
         except CursorFailed as cursor_exc:
             await connection.rollback()
             raise cursor_exc
-        except Exception:
-            raise ConnectionFailed("Connection to db failed")
+        except Exception as exc:
+            raise ConnectionFailed("Connection to db failed") from exc
         else:
             await connection.commit()
         finally:

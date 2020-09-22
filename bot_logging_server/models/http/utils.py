@@ -35,13 +35,13 @@ def check_api_key_and_content_type_correct(x_api_key: str, x_content_type: str) 
 
 def check_str_args_are_one_word_and_not_empty(*args) -> None:
     for arg in args:
-        if not isinstance(arg, str) or len(arg.strip()) == 0 or len(arg.split()) != 1:
+        if not isinstance(arg, str) or not arg.strip() or len(arg.split()) != 1:
             raise BadRequestArgs("Str argument is provided incorrectly")
 
 
 def check_str_args_not_empty(*args) -> None:
     for arg in args:
-        if not isinstance(arg, str) or len(arg.strip()) == 0:
+        if not isinstance(arg, str) or not arg.strip():
             raise BadRequestArgs("Str argument is provided incorrectly")
 
 
@@ -57,8 +57,8 @@ def try_get_datetime(time: str) -> datetime.datetime:
     try:
         parsed_time = datetime.datetime.fromisoformat(time)
         return datetime.datetime.utcfromtimestamp(parsed_time.timestamp())
-    except ValueError:
-        raise BadRequestArgs("Can not parse datetime")
+    except ValueError as val_err:
+        raise BadRequestArgs("Can not parse datetime") from val_err
 
 
 def try_get_log_level(log_level: str) -> logs.LogLevel:
@@ -67,5 +67,5 @@ def try_get_log_level(log_level: str) -> logs.LogLevel:
     try:
         result = logs.LogLevel(log_level)
         return result
-    except ValueError:
-        raise BadRequestArgs("log_level is incorrect")
+    except ValueError as val_err:
+        raise BadRequestArgs("log_level is incorrect") from val_err

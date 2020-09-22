@@ -159,8 +159,13 @@ python3 -m pydoc -p port
 Для тестирования используется стандартный фреймворк pytest
 ```
 source venv/bin/activate
-export PYTHONPATH=`pwd`
 pytest
+```
+
+### Pylint
+```
+source venv/bin/activate
+python3 -m pylint bot_logging_server
 ```
 
 ### Сборка колеса

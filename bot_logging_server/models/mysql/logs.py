@@ -1,3 +1,5 @@
+# pylint: disable=R0902
+# pylint: disable=R0913
 import dataclasses
 import datetime
 import enum

@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 import dataclasses
 import datetime
 import logging
@@ -11,7 +12,7 @@ from bot_logging_server.models.http import (
 )
 from bot_logging_server.models.mysql import logs
 
-logger = logging.getLogger("quart.serving")
+logger = logging.getLogger("quart.serving")  # pylint: disable=C0103
 
 
 @dataclasses.dataclass(frozen=True)
@@ -29,7 +30,7 @@ class SendLogsPostRequest:
     @classmethod
     async def build(cls, quart_request: quart.Request) -> "SendLogsPostRequest":
         body = await quart_request.get_json(force=True)
-        logger.info("Request: %s" % body)
+        logger.info("Request: %s", body)
         headers = quart_request.headers
         try:
             return cls(body=RequestBody.build(body), headers=Headers.build(headers))
@@ -40,7 +41,7 @@ class SendLogsPostRequest:
             headers_template.WrongHeadersError,
             http_utils.BadRequestArgs,
         ) as err:
-            logger.error(err)
+            logger.error('During parsing request happened %s', err)
             raise http_utils.RequestParsingFailedError from err
 
 
