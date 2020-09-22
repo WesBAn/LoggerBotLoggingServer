@@ -5,6 +5,13 @@ from bot_logging_server.models.mysql import logs
 from bot_logging_server.config import config
 
 
+LEVEL_TO_LOG_LEVEL_ENUM = {
+    30: logs.LogLevel.WARNING,
+    40: logs.LogLevel.ERROR,
+    50: logs.LogLevel.ERROR,
+}
+
+
 class RequestParsingFailedError(Exception):
     """Request is incorrect"""
 
@@ -61,11 +68,11 @@ def try_get_datetime(time: str) -> datetime.datetime:
         raise BadRequestArgs("Can not parse datetime") from val_err
 
 
-def try_get_log_level(log_level: str) -> logs.LogLevel:
-    if not isinstance(log_level, str):
+def try_get_log_level(log_level: int) -> logs.LogLevel:
+    if not isinstance(log_level, int):
         raise BadRequestArgs("log_level is incorrect")
     try:
-        result = logs.LogLevel(log_level)
+        result = LEVEL_TO_LOG_LEVEL_ENUM[log_level]
         return result
-    except ValueError as val_err:
-        raise BadRequestArgs("log_level is incorrect") from val_err
+    except KeyError as key_err:
+        raise BadRequestArgs("log_level is incorrect") from key_err
