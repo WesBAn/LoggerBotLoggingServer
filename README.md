@@ -10,9 +10,9 @@
 Клиент в данном случае - является [logger](https://github.com/den-bibik/LoggerBotLogging),
 его можно поставить из https://github.com/den-bibik/LoggerBotLogging
 
-###/send_logs:
+### /send_logs:
 
-####body:
+#### body:
 ```
 {
   "data": {
@@ -40,20 +40,20 @@
 ```
 **logs** - в данном случае массив из логов пользователя, которые необходимо записать в базу данных
 
-####headers:
+#### headers:
 ```
 'Content-Type': 'application/json'
 'X-User-Token': 'a5amka921jkmakguasl1kna9u6sl1241'
 ```
 **X-User-Token** - токен захешированный в md5, по которому происходит аутентификация клиента
 
-####responses:
+#### responses:
 - 200: `{"code": 200, "message": "Logs added successfully"}` - Логи успешно были добавлены в таблицу user_logs
 - 400: `{"code": 400, "message": "BadRequest"}` - Был получен некорректный запрос
 - 403: `{"code": 403, "message": "Forbidden"}` - Клиент не прошел аутентификацию
 - 500: `{"code": 500, "message": "InternalServerError"}` - Внутренняя ошибка сервера
-###/create_user
-####body:
+### /create_user
+#### body:
 ```
 {
   "user": "username",
@@ -62,7 +62,7 @@
 }
 ```
 
-####headers:
+#### headers:
 ```
 'Content-Type': 'application/json'
 'X-Api-Key': 'Some-Api-Key'
